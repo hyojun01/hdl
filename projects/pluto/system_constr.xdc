@@ -79,7 +79,7 @@ set_property  -dict {PACKAGE_PIN  M14  IOSTANDARD LVCMOS18 PULLTYPE PULLUP} [get
 
 set_property  -dict {PACKAGE_PIN  P8   IOSTANDARD LVCMOS18} [get_ports clk_out]
 
-create_clock -name rx_clk -period  16.27 [get_ports rx_clk_in]
+create_clock -name rx_clk -period  50 [get_ports rx_clk_in]
 
 # probably gone in 2016.4
 

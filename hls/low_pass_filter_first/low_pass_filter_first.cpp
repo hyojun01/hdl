@@ -16,7 +16,7 @@ void low_pass_filter_first(hls::stream<axis_t>& input, hls::stream<axis_t>& outp
 #pragma HLS INTERFACE mode = axis port = output
 // #pragma HLS INTERFACE mode = s_axilite port = return bundle = control 
 #pragma HLS INTERFACE mode = ap_ctrl_none port = return 
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II = 2
 
     const coef_t coefficient[DECIMATION_FACTOR][11] = {
         { -0.0000077433, -0.0000186248, -0.0000088219, 0.0000159231, -0.0000082580, 0.5000390250, -0.0000082580, 0.0000159231, -0.0000088219, -0.0000186248, -0.0000077433 },
