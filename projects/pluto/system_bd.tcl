@@ -202,7 +202,7 @@ ad_ip_parameter axi_ad9361 CONFIG.TDD_DISABLE 1
 
 ad_ip_instance axi_dmac axi_ad9361_adc_dma
 # hyojun: we use axis interface.
-ad_ip_parameter axi_ad9361_adc_dma CONFIG.DMA_TYPE_SRC 1
+ad_ip_parameter axi_ad9361_adc_dma CONFIG.DMA_TYPE_SRC 2
 ad_ip_parameter axi_ad9361_adc_dma CONFIG.DMA_TYPE_DEST 0
 ad_ip_parameter axi_ad9361_adc_dma CONFIG.CYCLIC 0
 ad_ip_parameter axi_ad9361_adc_dma CONFIG.SYNC_TRANSFER_START 1
@@ -219,6 +219,14 @@ ad_ip_parameter axis_fifo_real CONFIG.DATA_WIDTH 16
 
 ad_ip_instance util_axis_fifo axis_fifo_imag
 ad_ip_parameter axis_fifo_imag CONFIG.DATA_WIDTH 16
+
+ad_ip_instance util_axis_fifo axis_fifo_buffer
+ad_ip_parameter axis_fifo_buffer CONFIG.DATA_WIDTH 32
+ad_ip_parameter axis_fifo_buffer CONFIG.ASYNC_CLK 0
+ad_ip_parameter axis_fifo_buffer CONFIG.ADDRESS_WIDTH 10
+
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 dmac_sync_one
+set_property -dict [list CONFIG.CONST_VAL {1} CONFIG.CONST_WIDTH {1}] [get_bd_cells dmac_sync_one]
 
 ad_ip_instance fir_decimation_filter fir_decimation_filter_real
 ad_ip_instance fir_decimation_filter fir_decimation_filter_imag
@@ -287,8 +295,18 @@ ad_connect low_pass_filter_first/output_r low_pass_filter_second/input_r
 ad_connect sys_cpu_clk low_pass_filter_second/ap_clk
 ad_connect sys_cpu_resetn low_pass_filter_second/ap_rst_n
 
-ad_connect axi_ad9361_adc_dma/s_axis low_pass_filter_second/output_r
-ad_connect sys_cpu_clk axi_ad9361_adc_dma/s_axis_aclk 
+ad_connect axis_fifo_buffer/s_axis low_pass_filter_second/output_r
+ad_connect sys_cpu_clk axis_fifo_buffer/s_axis_aclk
+ad_connect sys_cpu_resetn axis_fifo_buffer/s_axis_aresetn
+ad_connect sys_cpu_clk axis_fifo_buffer/m_axis_aclk
+ad_connect sys_cpu_resetn axis_fifo_buffer/m_axis_aresetn
+
+ad_connect sys_cpu_clk axi_ad9361_adc_dma/fifo_wr_clk
+ad_connect axis_fifo_buffer/m_axis_data axi_ad9361_adc_dma/fifo_wr_din
+ad_connect axis_fifo_buffer/m_axis_valid axi_ad9361_adc_dma/fifo_wr_en
+ad_connect axis_fifo_buffer/m_axis_ready axi_ad9361_adc_dma/fifo_wr_overflow
+
+ad_connect dmac_sync_one/dout axi_ad9361_adc_dma/sync
 
 # interconnects
 
