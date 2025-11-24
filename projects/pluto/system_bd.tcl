@@ -198,6 +198,7 @@ ad_ip_parameter axi_ad9361 CONFIG.CMOS_OR_LVDS_N 1
 # hyojun: we use 1RX and 1TX Mode.
 ad_ip_parameter axi_ad9361 CONFIG.MODE_1R1T 1
 ad_ip_parameter axi_ad9361 CONFIG.ADC_INIT_DELAY 21
+ad_ip_parameter axi_ad9361 CONFIG.TDD_DISABLE 1
 
 ad_ip_instance axi_dmac axi_ad9361_adc_dma
 # hyojun: we use axis interface.
