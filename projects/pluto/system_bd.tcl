@@ -220,10 +220,20 @@ ad_ip_parameter axis_fifo_real CONFIG.DATA_WIDTH 16
 ad_ip_instance util_axis_fifo axis_fifo_imag
 ad_ip_parameter axis_fifo_imag CONFIG.DATA_WIDTH 16
 
-ad_ip_instance util_axis_fifo axis_fifo_buffer
-ad_ip_parameter axis_fifo_buffer CONFIG.DATA_WIDTH 32
-ad_ip_parameter axis_fifo_buffer CONFIG.ASYNC_CLK 0
-ad_ip_parameter axis_fifo_buffer CONFIG.ADDRESS_WIDTH 10
+ad_ip_instance util_cpack2 cpack
+ad_ip_parameter cpack CONFIG.NUM_OF_CHANNELS 2
+
+ad_ip_instance xlslice xslice_lower
+ad_ip_parameter xslice_lower CONFIG.DIN_WIDTH 32
+ad_ip_parameter xslice_lower CONFIG.DIN_FROM 15
+ad_ip_parameter xslice_lower CONFIG.DIN_TO 0
+ad_ip_parameter xslice_lower CONFIG.DOUT_WIDTH 16
+
+ad_ip_instance xlslice xslice_upper
+ad_ip_parameter xslice_upper CONFIG.DIN_WIDTH 32
+ad_ip_parameter xslice_upper CONFIG.DIN_FROM 31
+ad_ip_parameter xslice_upper CONFIG.DIN_TO 16
+ad_ip_parameter xslice_upper CONFIG.DOUT_WIDTH 16
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 dmac_sync_one
 set_property -dict [list CONFIG.CONST_VAL {1} CONFIG.CONST_WIDTH {1}] [get_bd_cells dmac_sync_one]
@@ -257,6 +267,11 @@ ad_ip_instance util_vector_logic logic_inv [list \
   C_OPERATION {not} \
   C_SIZE 1]
 ad_connect logic_inv/Op1  axi_ad9361/rst
+
+ad_ip_instance util_vector_logic logic_inv2 [list \
+  C_OPERATION {not} \
+  C_SIZE 1]
+ad_connect logic_inv2/Op1 sys_cpu_resetn
 
 ad_connect axi_ad9361/adc_data_i0 axis_fifo_real/s_axis_data
 ad_connect axi_ad9361/adc_valid_i0 axis_fifo_real/s_axis_valid
@@ -295,16 +310,22 @@ ad_connect low_pass_filter_first/output_r low_pass_filter_second/input_r
 ad_connect sys_cpu_clk low_pass_filter_second/ap_clk
 ad_connect sys_cpu_resetn low_pass_filter_second/ap_rst_n
 
-ad_connect axis_fifo_buffer/s_axis low_pass_filter_second/output_r
-ad_connect sys_cpu_clk axis_fifo_buffer/s_axis_aclk
-ad_connect sys_cpu_resetn axis_fifo_buffer/s_axis_aresetn
-ad_connect sys_cpu_clk axis_fifo_buffer/m_axis_aclk
-ad_connect sys_cpu_resetn axis_fifo_buffer/m_axis_aresetn
+ad_connect low_pass_filter_second/output_r_TDATA xslice_lower/Din
+ad_connect low_pass_filter_second/output_r_TDATA xslice_upper/Din
+ad_connect xslice_lower/Dout cpack/fifo_wr_data_0
+ad_connect xslice_upper/Dout cpack/fifo_wr_data_1
+ad_connect low_pass_filter_second/output_r_TVALID cpack/fifo_wr_en
+ad_connect dmac_sync_one/dout low_pass_filter_second/output_r_TREADY
 
+ad_connect sys_cpu_clk cpack/clk
+ad_connect logic_inv2/Res cpack/reset
+ad_connect cpack/enable_0 axi_ad9361/adc_enable_i0
+ad_connect cpack/enable_1 axi_ad9361/adc_enable_q0
+
+ad_connect axi_ad9361_adc_dma/fifo_wr cpack/packed_fifo_wr
 ad_connect sys_cpu_clk axi_ad9361_adc_dma/fifo_wr_clk
-ad_connect axis_fifo_buffer/m_axis_data axi_ad9361_adc_dma/fifo_wr_din
-ad_connect axis_fifo_buffer/m_axis_valid axi_ad9361_adc_dma/fifo_wr_en
-ad_connect axis_fifo_buffer/m_axis_ready axi_ad9361_adc_dma/fifo_wr_overflow
+
+ad_connect  cpack/fifo_wr_overflow axi_ad9361/adc_dovf
 
 ad_connect dmac_sync_one/dout axi_ad9361_adc_dma/sync
 
