@@ -3,6 +3,7 @@
 ### SPDX short identifier: ADIBSD
 ###############################################################################
 
+# hyojun: add DAC FIFO guard, must be added before creating block design
 add_files -norecurse -fileset sources_1 \
   "../../../../vivado_src/dac_fifo_guard.v"
 update_compile_order -fileset sources_1
@@ -462,16 +463,16 @@ ad_connect sys_cpu_clk dac_data_fifo/wr_clk
 ad_connect axi_ad9361/l_clk dac_data_fifo/rd_clk
 ad_connect sys_cpu_resetn dac_data_fifo/rst
 
-ad_connect dac_data_fifo/dout dac_fifo_guard/dac_fifo_dout
-ad_connect dac_data_fifo/empty dac_fifo_guard/dac_fifo_empty
-ad_connect axi_ad9361/dac_valid_i0 dac_fifo_guard/dac_valid_i0
-ad_connect axi_ad9361/dac_valid_q0 dac_fifo_guard/dac_valid_q0
+ad_connect dac_data_fifo/dout dac_fifo_guard/fifo_dout
+ad_connect dac_data_fifo/empty dac_fifo_guard/fifo_empty
+ad_connect axi_ad9361/dac_valid_i0 dac_fifo_guard/valid_real
+ad_connect axi_ad9361/dac_valid_q0 dac_fifo_guard/valid_imag
 
-ad_connect dac_fifo_guard/dac_fifo_rd_en dac_data_fifo/rd_en
+ad_connect dac_fifo_guard/fifo_enable dac_data_fifo/rd_en
 
-ad_connect dac_fifo_guard/dac_data_i0 dac_i0_concat/In1
+ad_connect dac_fifo_guard/data_real dac_i0_concat/In1
 ad_connect GND dac_i0_concat/In0
-ad_connect dac_fifo_guard/dac_data_q0 dac_q0_concat/In1
+ad_connect dac_fifo_guard/data_imag dac_q0_concat/In1
 ad_connect GND dac_q0_concat/In0
 
 ad_connect dac_i0_concat/dout axi_ad9361/dac_data_i0
