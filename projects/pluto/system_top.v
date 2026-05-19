@@ -190,8 +190,8 @@ module system_top (
     .spi_sdo_i(1'b0),
     .spi_sdo_o(pl_spi_mosi),
 
-    .tdd_ext_sync(pl_burst),
-    .txdata_o(pl_txdata),
+    //.tdd_ext_sync(pl_burst),
+    //.txdata_o(pl_txdata),
 
     .tx_clk_out (tx_clk_out),
     .tx_data_out (tx_data_out),
