@@ -459,9 +459,14 @@ ad_connect dac_data_fifo/full logic_not_2/Op1
 ad_connect logic_not_2/Res logic_and_2/Op2
 ad_connect logic_and_2/Res dac_data_fifo/wr_en
 
+ad_ip_instance util_vector_logic logic_not_3 [list \
+  C_OPERATION {not} \
+  C_SIZE 1]
 ad_connect sys_cpu_clk dac_data_fifo/wr_clk
 ad_connect axi_ad9361/l_clk dac_data_fifo/rd_clk
-ad_connect sys_cpu_resetn dac_data_fifo/rst
+#hyojun: we shall use active high reset for DAC FIFO
+ad_connect sys_cpu_resetn logic_not_3/Op1
+ad_connect logic_not_3/Res dac_data_fifo/rst
 
 ad_connect dac_data_fifo/dout dac_fifo_guard/fifo_dout
 ad_connect dac_data_fifo/empty dac_fifo_guard/fifo_empty
