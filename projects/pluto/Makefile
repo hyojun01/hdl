@@ -6,19 +6,25 @@
 
 PROJECT_NAME := pluto
 
-M_DEPS += ../common/xilinx/adi_fir_filter_constr.xdc
-M_DEPS += ../common/xilinx/adi_fir_filter_bd.tcl
-M_DEPS += ../../library/util_cdc/sync_bits.v
-M_DEPS += ../../library/common/util_pulse_gen.v
+# M_DEPS += ../common/xilinx/adi_fir_filter_constr.xdc
+# M_DEPS += ../common/xilinx/adi_fir_filter_bd.tcl
+# M_DEPS += ../../library/util_cdc/sync_bits.v
+# M_DEPS += ../../library/common/util_pulse_gen.v
 M_DEPS += ../../library/common/ad_iobuf.v
-M_DEPS += ../../library/common/ad_bus_mux.v
-M_DEPS += ../../library/axi_tdd/scripts/axi_tdd.tcl
+M_DEPS += hdl_chirp_cdc.tcl
+# M_DEPS += ../../library/common/ad_bus_mux.v
+# M_DEPS += ../../library/axi_tdd/scripts/axi_tdd.tcl
 M_DEPS += ../../library/axi_ad9361/axi_ad9361_delay.tcl
 
 LIB_DEPS += axi_ad9361
-LIB_DEPS += axi_dmac
-LIB_DEPS += axi_tdd
-LIB_DEPS += util_pack/util_cpack2
-LIB_DEPS += util_pack/util_upack2
+# Custom reference design needs wfifo, rfifo, and clkdiv for interface between axi_ad9361 and DUT IP core.
+LIB_DEPS += util_wfifo
+LIB_DEPS += util_rfifo
+LIB_DEPS += xilinx/util_clkdiv
+# Custom reference design doesn't need axi_dmac, axi_tdd, cpack, and upack.
+# LIB_DEPS += axi_dmac
+# LIB_DEPS += axi_tdd
+# LIB_DEPS += util_pack/util_cpack2
+# LIB_DEPS += util_pack/util_upack2
 
 include ../scripts/project-xilinx.mk
