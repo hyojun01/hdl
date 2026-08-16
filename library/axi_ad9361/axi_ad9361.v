@@ -70,7 +70,8 @@ module axi_ad9361 #(
   parameter   MIMO_ENABLE = 0,
   parameter   USE_SSI_CLK = 1,
   parameter   DELAY_REFCLK_FREQUENCY = 200,
-  parameter   RX_NODPA = 0
+  parameter   RX_NODPA = 0,
+  parameter [3:0] DAC_DATA_SEL_INIT = 4'h0
 ) (
 
   // physical interface (receive-lvds)
@@ -678,7 +679,8 @@ module axi_ad9361 #(
     .DAC_DDS_CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
     .USERPORTS_DISABLE (DAC_USERPORTS_DISABLE_INT),
     .DELAYCNTRL_DISABLE (DAC_DELAYCNTRL_DISABLE_INT),
-    .IQCORRECTION_DISABLE (DAC_IQCORRECTION_DISABLE_INT)
+    .IQCORRECTION_DISABLE (DAC_IQCORRECTION_DISABLE_INT),
+    .DAC_DATA_SEL_INIT (DAC_DATA_SEL_INIT)
   ) i_tx (
     .dac_clk (clk),
     .dac_valid (dac_valid_s),

@@ -48,7 +48,8 @@ module axi_ad9361_tx_channel #(
   parameter   DAC_DDS_CORDIC_DW = 14,
   parameter   DAC_DDS_CORDIC_PHASE_DW = 13,
   parameter   USERPORTS_DISABLE = 0,
-  parameter   IQCORRECTION_DISABLE = 0
+  parameter   IQCORRECTION_DISABLE = 0,
+  parameter [3:0] DAC_DATA_SEL_INIT = 4'h0
 ) (
 
   // dac interface
@@ -93,7 +94,7 @@ module axi_ad9361_tx_channel #(
   // internal registers
 
   reg             dac_valid_sel = 'd0;
-  reg             dac_enable_int = 'd0;
+  reg             dac_enable_int = (DAC_DATA_SEL_INIT == 4'h2);
   reg     [11:0]  dac_data_int = 'd0;
   reg     [11:0]  dac_data_out_int = 'd0;
   reg     [23:0]  dac_pn_seq = 'd0;
@@ -368,7 +369,8 @@ module axi_ad9361_tx_channel #(
     .DDS_DISABLE (DAC_DDS_DISABLE),
     .DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
-    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
+    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE),
+    .DAC_DATA_SEL_INIT (DAC_DATA_SEL_INIT)
   ) i_up_dac_channel (
     .dac_clk (dac_clk),
     .dac_rst (dac_rst),

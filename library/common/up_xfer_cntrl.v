@@ -37,7 +37,8 @@
 
 module up_xfer_cntrl #(
 
-  parameter     DATA_WIDTH = 8
+  parameter     DATA_WIDTH = 8,
+  parameter [DATA_WIDTH-1:0] DATA_INIT = {DATA_WIDTH{1'b0}}
 ) (
 
   // up interface
@@ -62,12 +63,12 @@ module up_xfer_cntrl #(
   reg     [ 5:0]              up_xfer_count = 'd0;
   reg                         up_xfer_done_int = 'd0;
   reg                         up_xfer_toggle = 'd0;
-  reg     [(DATA_WIDTH-1):0]  up_xfer_data = 'd0;
+  reg     [(DATA_WIDTH-1):0]  up_xfer_data = DATA_INIT;
   reg                         d_xfer_toggle_m1 = 'd0;
   reg                         d_xfer_toggle_m2 = 'd0;
   reg                         d_xfer_toggle_m3 = 'd0;
   reg                         d_xfer_toggle = 'd0;
-  reg     [(DATA_WIDTH-1):0]  d_data_cntrl_int = 'd0;
+  reg     [(DATA_WIDTH-1):0]  d_data_cntrl_int = DATA_INIT;
 
   // internal signals
 
@@ -87,7 +88,7 @@ module up_xfer_cntrl #(
       up_xfer_count <= 'd0;
       up_xfer_done_int <= 'd0;
       up_xfer_toggle <= 'd0;
-      up_xfer_data <= 'd0;
+      up_xfer_data <= DATA_INIT;
     end else begin
       up_xfer_state_m1 <= d_xfer_toggle;
       up_xfer_state_m2 <= up_xfer_state_m1;
@@ -110,7 +111,7 @@ module up_xfer_cntrl #(
       d_xfer_toggle_m2 <= 'd0;
       d_xfer_toggle_m3 <= 'd0;
       d_xfer_toggle <= 'd0;
-      d_data_cntrl_int <= 'd0;
+      d_data_cntrl_int <= DATA_INIT;
     end else begin
       d_xfer_toggle_m1 <= up_xfer_toggle;
       d_xfer_toggle_m2 <= d_xfer_toggle_m1;

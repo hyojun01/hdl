@@ -46,7 +46,8 @@ module up_dac_channel #(
   parameter   DDS_PHASE_DW = 16,
   parameter   USERPORTS_DISABLE = 0,
   parameter   IQCORRECTION_DISABLE = 0,
-  parameter   XBAR_ENABLE = 0
+  parameter   XBAR_ENABLE = 0,
+  parameter [3:0] DAC_DATA_SEL_INIT = 4'h0
 ) (
 
   // dac interface
@@ -100,6 +101,12 @@ module up_dac_channel #(
   output          up_rack
 );
 
+  localparam [239:0] DAC_CONTROL_INIT = {
+    {227{1'b0}},
+    DAC_DATA_SEL_INIT,
+    9'b0
+  };
+
   // internal registers
 
   reg             up_wack_int = 'd0;
@@ -118,7 +125,7 @@ module up_dac_channel #(
   reg             up_dac_iqcor_enb = 'd0;
   reg             up_dac_lb_enb = 'd0;
   reg             up_dac_pn_enb = 'd0;
-  reg     [ 3:0]  up_dac_data_sel = 'd0;
+  reg     [ 3:0]  up_dac_data_sel = DAC_DATA_SEL_INIT;
   reg     [15:0]  up_dac_iqcor_coeff_1 = 'd0;
   reg     [15:0]  up_dac_iqcor_coeff_2 = 'd0;
   reg             up_usr_datatype_be_int = 'd0;
@@ -135,7 +142,7 @@ module up_dac_channel #(
   reg     [15:0]  up_dac_dds_scale_tc_2 = 'd0;
   reg     [15:0]  up_dac_iqcor_coeff_tc_1 = 'd0;
   reg     [15:0]  up_dac_iqcor_coeff_tc_2 = 'd0;
-  reg     [ 3:0]  up_dac_data_sel_m = 'd0;
+  reg     [ 3:0]  up_dac_data_sel_m = DAC_DATA_SEL_INIT;
   reg     [ 7:0]  up_dac_src_chan_sel = XBAR_ENABLE ? CHANNEL_NUMBER[7:0] : 8'h0;
   reg             up_dac_mask_enable = 1'b0;
 
@@ -275,7 +282,7 @@ module up_dac_channel #(
     if (up_rstn == 0) begin
       up_dac_lb_enb <= 'd0;
       up_dac_pn_enb <= 'd0;
-      up_dac_data_sel <= 'd0;
+      up_dac_data_sel <= DAC_DATA_SEL_INIT;
       up_dac_src_chan_sel <= XBAR_ENABLE ? CHANNEL_NUMBER[7:0] : 8'h0;
       up_dac_mask_enable <= 1'b0;
     end else begin
@@ -424,7 +431,7 @@ module up_dac_channel #(
 
   always @(negedge up_rstn or posedge up_clk) begin
     if (up_rstn == 0) begin
-      up_dac_data_sel_m <= 4'd0;
+      up_dac_data_sel_m <= DAC_DATA_SEL_INIT;
     end else begin
       case ({up_dac_lb_enb, up_dac_pn_enb})
         2'b10: up_dac_data_sel_m <= 4'h8;
@@ -437,7 +444,8 @@ module up_dac_channel #(
   // dac control & status
 
   up_xfer_cntrl #(
-    .DATA_WIDTH(240)
+    .DATA_WIDTH(240),
+    .DATA_INIT (DAC_CONTROL_INIT)
   ) i_xfer_cntrl (
     .up_rstn (up_rstn),
     .up_clk (up_clk),
