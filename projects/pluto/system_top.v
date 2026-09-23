@@ -97,12 +97,10 @@ module system_top (
   wire            iic_scl;
   wire            iic_sda;
   wire            phaser_enable;
-  wire            pl_burst;
   wire            pl_muxout;
   wire            pl_spi_clk_o;
   wire            pl_spi_miso;
   wire            pl_spi_mosi;
-  wire            pl_txdata;
 
   // instantiations
 
@@ -135,10 +133,9 @@ module system_top (
 
   //PL_GPIO1
   assign pl_spi_miso = pl_gpio1 & ~phaser_enable;
-  assign pl_burst    = pl_gpio1 &  phaser_enable;
 
   //PL_GPIO0
-  assign pl_gpio0 = phaser_enable ? pl_txdata : pl_spi_mosi;
+  assign pl_gpio0 = phaser_enable ? 1'b0 : pl_spi_mosi;
 
   system_wrapper i_system_wrapper (
     .ddr_addr (ddr_addr),
@@ -189,9 +186,6 @@ module system_top (
     .spi_sdi_i(pl_spi_miso),
     .spi_sdo_i(1'b0),
     .spi_sdo_o(pl_spi_mosi),
-
-    .tdd_ext_sync(pl_burst),
-    .txdata_o(pl_txdata),
 
     .tx_clk_out (tx_clk_out),
     .tx_data_out (tx_data_out),
